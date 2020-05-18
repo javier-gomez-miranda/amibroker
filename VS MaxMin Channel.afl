@@ -1,0 +1,10 @@
+par1 = Param("Max channel", 52, 1, 100, 1);
+par2 = Param("Min channel", 52, 1, 100, 1);
+
+maxChannel = HHV( close, par1 );
+minChannel = LLV( close, par1 );
+
+_SECTION_BEGIN("Channel");	
+	Plot( maxChannel, "Max Channel", colorDarkGrey, styleLine, Null, Null, 0, -1 ); 
+	Plot( minChannel, "Min Channel", colorDarkGrey, styleLine, Null, Null, 0, -1 ); 
+_SECTION_END();
