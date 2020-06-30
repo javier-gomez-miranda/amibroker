@@ -1,0 +1,57 @@
+/* Developed by: Javier Gomez Miranda 
+	Strategy gotten from FormacionEnBolsa.com
+	Screener to find weekly matches to operate Weinstein strategy
+	Setup:
+	1. Temporality: Weekly
+	2. Data range: last full week
+	3. Run it over the weekend
+	4. Select the results based on their weighted momentum
+*/
+
+maxClosingPrice = hhv( C, 52 );
+//maxClosingPrice = (maxLastYearArr);//[BarCount-1];
+c1 = C > 0.97 * maxClosingPrice;
+
+highestvolume = HHV(V,52);
+vol = ((V * 100 / highestvolume) * 4 / 5);
+volpmed = EMA(vol, 52);
+VPM = (vol - volpmed);
+VPM5 = MA(VPM, 5);
+c2 = VPM5 > 0 AND VPM > -8;
+
+//Increasing average
+mm30 = WMA(C, 30);
+c3 = Ref(mm30, -1) < mm30;
+
+//Price not far from average
+distmm30 = abs(C - mm30) / mm30 * 100;
+c4 = distmm30 < 11;
+
+//Price above the WMA30 
+c5 = C > mm30;
+
+//Business capitalization
+capital = V * C;
+c6 = capital > 4000000;
+
+//Historical data for more than 2 years
+c7 = LastValue( BarIndex() ) > 104;
+
+// Volatibility between 0 Y 9%
+volatibility = ATR(10) / mm30 * 100;
+c8 = volatibility < 9;
+
+// MOMENTO
+weightedMom = 0;
+mom1 = (Ref(C,-39) - Ref(C,-52)) / Ref(C,-52);
+mom2 = (Ref(C,-26) - Ref(C,-39)) / Ref(C,-39);
+mom3 = (Ref(C,-13) - Ref(C,-26)) / Ref(C,-26);
+mom4 = (C - Ref(C,-13)) / Ref(C,-13);
+
+weightedMom = (mom1 * 10) + (mom2 * 20) + (mom3 * 30) + (mom4 * 40);
+
+
+Filter = c1 AND c2 AND c3 AND c4 AND c5 AND c6 AND c7 AND c8;
+AddColumn(weightedMom,"Weighted Momento",1.2);
+AddColumn(VPM, "VPM", 1.2);
+AddColumn(C, "Close", 1.2);

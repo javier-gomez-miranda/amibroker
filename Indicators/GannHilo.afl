@@ -1,0 +1,14 @@
+/*Gann Hilo indicator
+ @Develop by Javier Gomez
+*/
+_SECTION_BEGIN("Gann Hilo");	
+	periods = Param("Periods", 30, 1, 300, 1, 10 );
+	style = ParamStyle("Style");
+
+	Hld = IIf(C > Ref(MA(H, periods), -1), 1, IIf(C < Ref(MA(L, periods), -1), -1, 0));
+	Hlv = ValueWhen(Hld != 0, Hld, 1);
+	gann = IIf(Hlv == -1, MA(H, periods), MA(L, periods));
+	color = IIf(C > gann, colorGreen, colorRed);
+	
+	Plot(gann, _DEFAULT_NAME(), color, style);
+_SECTION_END();
